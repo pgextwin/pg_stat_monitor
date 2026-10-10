@@ -42,7 +42,7 @@ shared_module('pg_stat_monitor',
   include_directories: [pgserverdir / 'port/win32_msvc', pgserverdir / 'port/win32', pgserverdir, pgincludedir, 'src'],
   dependencies: postgres_lib,
   vs_module_defs: 'pg_stat_monitor.pgextwin.def',
-  c_args: ['/DWIN32'],
+  c_args: ['/DWIN32', '/Zc:preprocessor'],
   name_prefix: '',
   install: false
 )
