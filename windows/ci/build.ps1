@@ -43,6 +43,16 @@ Write-Host 'Rewrote only the PG14–18 DSA call in disposable source for MSVC.'
 # The upstream Meson file is a PostgreSQL in-tree contrib fragment, not a
 # standalone project. Use a generated temporary Meson project in this checkout.
 # This is a reproducible, explicit MSVC adaptation (no vendored source fork).
+$pgMajor=[int]([regex]::Match($pgversion,'^PostgreSQL\\s+(\\d+)\\.')).Groups[1].Value
+if($pgMajor -le 15){
+    $sourcePath=Join-Path $UpstreamDir 'src/pg_stat_monitor.c'
+    $content=[IO.File]::ReadAllText($sourcePath,[Text.Encoding]::UTF8)
+    $header='#include <sys/resource.h>'
+    if(([regex]::Matches($content,[regex]::Escape($header)).Count) -ne 1){throw 'Unexpected upstream resource header'}
+    $replacement="#if PG_VERSION_NUM < 160000"+[Environment]::NewLine+'#include "rusagestub.h"'+[Environment]::NewLine+'#else'+[Environment]::NewLine+$header+[Environment]::NewLine+'#endif'
+    $content=$content.Replace($header,$replacement)
+    [IO.File]::WriteAllText($sourcePath,$content,[Text.UTF8Encoding]::new($false))
+}
 $meson=@'
 project('pg_stat_monitor', 'c', version: '2.4.0')
 pg_config = find_program('pg_config', required: true)
