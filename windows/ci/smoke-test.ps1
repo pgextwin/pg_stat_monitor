@@ -37,7 +37,7 @@ UPDATE public.pgextwin_monitor_test SET amount=30 WHERE id=2;
 DELETE FROM public.pgextwin_monitor_test WHERE id=1;
 SELECT count(*) AS pgextwin_marker FROM public.pgextwin_monitor_test WHERE amount>0;
 SELECT pg_sleep(0.2);
-DO $
+DO $$
 DECLARE observed bigint; buckets integer;
 BEGIN
   SELECT coalesce(sum(calls),0),count(DISTINCT bucket)
@@ -47,7 +47,7 @@ BEGIN
   IF observed<1 OR buckets<1 THEN
     RAISE EXCEPTION 'Real statements missing from monitor: calls=%, buckets=%',observed,buckets;
   END IF;
-END $;
+END $$;
 DROP TABLE public.pgextwin_monitor_test;
 DROP EXTENSION pg_stat_monitor;
 '@ | Set-Content -Path $sql -Encoding utf8
