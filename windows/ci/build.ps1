@@ -56,6 +56,7 @@ shared_module('pg_stat_monitor',
   dependencies: postgres_lib,
   vs_module_defs: 'pg_stat_monitor.pgextwin.def',
   c_args: ['/DWIN32', '/Zc:preprocessor'],
+  link_args: ['ws2_32.lib'],
   name_prefix: '',
   install: false
 )
