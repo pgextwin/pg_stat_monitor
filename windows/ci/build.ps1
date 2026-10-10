@@ -43,7 +43,7 @@ Write-Host 'Rewrote only the PG14–18 DSA call in disposable source for MSVC.'
 # The upstream Meson file is a PostgreSQL in-tree contrib fragment, not a
 # standalone project. Use a generated temporary Meson project in this checkout.
 # This is a reproducible, explicit MSVC adaptation (no vendored source fork).
-$pgMajor=[int]([regex]::Match($pgversion,'^PostgreSQL\\s+(\\d+)\\.')).Groups[1].Value
+$pgMajor=[int]([regex]::Match($pgversion,'^PostgreSQL\s+(\d+)\.')).Groups[1].Value
 if($pgMajor -le 15){
     $sourcePath=Join-Path $UpstreamDir 'src/pg_stat_monitor.c'
     $content=[IO.File]::ReadAllText($sourcePath,[Text.Encoding]::UTF8)
