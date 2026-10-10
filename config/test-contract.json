@@ -1,0 +1,44 @@
+{
+  "contractVersion": 2,
+  "extension": "pg_stat_monitor",
+  "smokeTest": {
+    "script": "windows/ci/smoke-test.ps1"
+  },
+  "runtimeRequirements": {
+    "extensionCreation": "required",
+    "preload": "shared",
+    "backgroundWorker": false,
+    "clientExecutable": {
+      "required": false,
+      "packagePaths": []
+    }
+  },
+  "testSetup": {
+    "preload": "shared",
+    "backgroundWorker": false,
+    "settings": []
+  },
+  "coverage": {
+    "createExtension": "covered",
+    "backgroundWorker": "not-applicable",
+    "clientExecutable": "not-applicable",
+    "serverLogAssertions": "not-covered",
+    "upgrade": "not-covered"
+  },
+  "functionalScenarios": [
+    {
+      "id": "preload-records-time-bucket",
+      "description": "Confirm preloaded monitor records a real query in query-time buckets",
+      "evidence": [
+        "sql-result"
+      ]
+    },
+    {
+      "id": "stat-monitor-version",
+      "description": "Verify extension version, query counters and shutdown cleanup",
+      "evidence": [
+        "sql-result"
+      ]
+    }
+  ]
+}
