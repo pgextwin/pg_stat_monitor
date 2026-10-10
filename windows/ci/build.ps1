@@ -43,30 +43,6 @@ Write-Host 'Rewrote only the PG14–18 DSA call in disposable source for MSVC.'
 # The upstream Meson file is a PostgreSQL in-tree contrib fragment, not a
 # standalone project. Use a generated temporary Meson project in this checkout.
 # This is a reproducible, explicit MSVC adaptation (no vendored source fork).
-# MSVC does not support preprocessing directives nested inside the
-# dsa_create_in_place argument list (upstream src/hash_query.c). Normalize
-# only the verified call site in the disposable SHA-pinned upstream checkout.
-$hashSource = Join-Path $UpstreamDir 'src/hash_query.c'
-$hashText = [IO.File]::ReadAllText($hashSource, [Text.Encoding]::UTF8)
-$hashPattern = 'dsa\s*=\s*dsa_create_in_place\(\s*pgsm->raw_dsa_area,\s*pgsm_query_area_size\(\),\s*#if\s+PG_VERSION_NUM\s*>=\s*190000\s*LWLockNewTrancheId\("pg_stat_monitor_dsa"\),\s*0\);\s*#else\s*LWLockNewTrancheId\(\),\s*0\);\s*#endif'
-$hashMatches = [regex]::Matches($hashText, $hashPattern)
-if ($hashMatches.Count -ne 1) {
-    throw "Pinned source changed: expected 1 conditional dsa_create_in_place site, found $($hashMatches.Count)"
-}
-$hashReplacement = @'
-#if PG_VERSION_NUM >= 190000
-        dsa = dsa_create_in_place(pgsm->raw_dsa_area,
-                                  pgsm_query_area_size(),
-                                  LWLockNewTrancheId("pg_stat_monitor_dsa"), 0);
-#else
-        dsa = dsa_create_in_place(pgsm->raw_dsa_area,
-                                  pgsm_query_area_size(),
-                                  LWLockNewTrancheId(), 0);
-#endif
-'@
-$hashText = [regex]::Replace($hashText, $hashPattern, [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $hashReplacement }, [Text.RegularExpressions.RegexOptions]::Singleline)
-[IO.File]::WriteAllText($hashSource, $hashText, [Text.UTF8Encoding]::new($false))
-Write-Host 'Applied controlled MSVC-preprocessor-compatible upstream source normalization.'
 $meson=@'
 project('pg_stat_monitor', 'c', version: '2.4.0')
 pg_config = find_program('pg_config', required: true)
