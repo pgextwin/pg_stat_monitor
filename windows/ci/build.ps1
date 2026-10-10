@@ -27,6 +27,19 @@ if($actualFunctionCount -lt 5){throw "Suspicious PG_FUNCTION_INFO_V1 export coun
 $exports=@($exports | Sort-Object -Unique)
 $defpath=Join-Path $UpstreamDir "$module.pgextwin.def"
 (@("LIBRARY $module","EXPORTS") + @($exports | ForEach-Object {"    $_"})) | Set-Content $defpath -Encoding ascii
+# MSVC cannot preprocess a conditional directive embedded inside a
+# function-like call's argument list (upstream hash_query.c, PG19-only path).
+# We ship PG14–18 only; this disposable checkout substitutes the identical
+# pre-PG19 branch. Refuse to patch if the immutable upstream source changes.
+$hashPath=Join-Path $UpstreamDir 'src/hash_query.c'
+$hashSource=[IO.File]::ReadAllText($hashPath,[Text.Encoding]::UTF8)
+$hashPattern='(?s)dsa\s*=\s*dsa_create_in_place\(\s*pgsm->raw_dsa_area\s*,\s*pgsm_query_area_size\(\)\s*,\s*#if\s+PG_VERSION_NUM\s*>=\s*190000\s+LWLockNewTrancheId\("pg_stat_monitor_dsa"\)\s*,\s*0\);\s*#else\s+LWLockNewTrancheId\(\)\s*,\s*0\);\s*#endif'
+$matchesFound=[regex]::Matches($hashSource,$hashPattern)
+if($matchesFound.Count -ne 1){throw "Expected one guarded pre-PG19 dsa call, found $($matchesFound.Count)"}
+$replacement='dsa = dsa_create_in_place(pgsm->raw_dsa_area, pgsm_query_area_size(), LWLockNewTrancheId(), 0);'
+$hashSource=[regex]::Replace($hashSource,$hashPattern,$replacement)
+[IO.File]::WriteAllText($hashPath,$hashSource,[Text.UTF8Encoding]::new($false))
+Write-Host 'Rewrote only the PG14–18 DSA call in disposable source for MSVC.'
 # The upstream Meson file is a PostgreSQL in-tree contrib fragment, not a
 # standalone project. Use a generated temporary Meson project in this checkout.
 # This is a reproducible, explicit MSVC adaptation (no vendored source fork).
