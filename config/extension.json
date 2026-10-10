@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "pg_stat_monitor",
+  "upstream": {
+    "repository": "percona/pg_stat_monitor",
+    "ref": "2.4.0",
+    "version": "2.4.0",
+    "commit": "2de2db763db9f590cd28159741c36b41f66eb985"
+  },
+  "postgresql": {
+    "majors": [
+      14,
+      15,
+      16,
+      17,
+      18
+    ]
+  },
+  "windows": {
+    "architecture": "x64"
+  },
+  "license": {
+    "verifyAgainstUpstream": true,
+    "upstreamPath": "LICENSE"
+  }
+}
