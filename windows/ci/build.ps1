@@ -53,6 +53,20 @@ if($pgMajor -le 15){
     $content=$content.Replace($header,$replacement)
     [IO.File]::WriteAllText($sourcePath,$content,[Text.UTF8Encoding]::new($false))
 }
+# PG14 Windows postgres.lib lacks the data export max_stack_depth.
+# GetConfigOption returns the same underlying integer value in kilobytes
+# for an integer GUC (confirmed against PG14 guc.c). Do not hardcode it.
+if($pgMajor -eq 14){
+    $sourcePath=Join-Path $UpstreamDir 'src/pg_stat_monitor.c'
+    $contents=[IO.File]::ReadAllText($sourcePath,[Text.Encoding]::UTF8)
+    $old='max_nesting_level = max_stack_depth;'
+    if(([regex]::Matches($contents,[regex]::Escape($old)).Count) -ne 1){
+        throw 'Unexpected upstream max_stack_depth assignment'
+    }
+    $replacement='max_nesting_level = (int) strtol(GetConfigOption("max_stack_depth", false, false), NULL, 10);'
+    $contents=$contents.Replace($old,$replacement)
+    [IO.File]::WriteAllText($sourcePath,$contents,[Text.UTF8Encoding]::new($false))
+}
 $meson=@'
 project('pg_stat_monitor', 'c', version: '2.4.0')
 pg_config = find_program('pg_config', required: true)
