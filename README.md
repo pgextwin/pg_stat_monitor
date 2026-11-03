@@ -1,11 +1,22 @@
-# pg_stat_monitor — Windows x64 binaries (pgextwin)
+# pg_stat_monitor — Windows x64
 
 [日本語](README_ja.md) | English
 
-This repository publishes unofficial Windows x64 binaries of [Percona pg_stat_monitor](https://github.com/percona/pg_stat_monitor) **2.4.0**, pinned to upstream commit `2de2db763db9f590cd28159741c36b41f66eb985`.
+This repository provides **unofficial Windows x64 binaries** for [pg_stat_monitor](https://github.com/percona/pg_stat_monitor). Time-bucketed PostgreSQL query statistics.
 
-**Current published release:** [v2.4.0-windows.1](https://github.com/pgextwin/pg_stat_monitor/releases/tag/v2.4.0-windows.1), for PostgreSQL **14–18**. Download the ZIP that matches your PostgreSQL major. SHA256 hashes, SPDX SBOMs, Grype reports and attestations are listed in the [pgextwin Catalog](https://pgextwin.github.io/website/en/). These community builds are not an upstream-official Windows distribution.
+## Download and compatibility
 
-Using pg_stat_monitor **requires** `shared_preload_libraries = 'pg_stat_monitor'` followed by a PostgreSQL restart, along with `CREATE EXTENSION pg_stat_monitor`. The Windows CI verifies startup with preload, a real query being recorded in time buckets, extension version and query counters, and shutdown cleanup. Server-log assertions and extension upgrades are **not covered** by the current Test Contract. See [Windows installation and verification guidance](docs/windows.md).
+Get the [latest published Release](https://github.com/pgextwin/pg_stat_monitor/releases/latest) or [browse all Releases](https://github.com/pgextwin/pg_stat_monitor/releases). Published packages for PostgreSQL **14–18** are listed in the [pgextwin catalog](https://pgextwin.github.io/website/en/). Download the ZIP matching your PostgreSQL major version. PostgreSQL 14 community support ends November 12, 2026; historical downloads may remain available.
 
-PostgreSQL 14 remains eligible for new builds only through its community EOL **2026-11-12**, while existing published binaries remain historical downloads. Publication still requires validated artifacts; upstream updates alone do not automatically trigger a public Release.
+## Installation
+
+1. Back up your PostgreSQL environment and check [upstream installation requirements](https://github.com/percona/pg_stat_monitor).
+2. Stop PostgreSQL before replacing files. Extract the ZIP for your PostgreSQL major and copy the packaged lib/ and share/extension/ files into the matching PostgreSQL installation directories.
+3. Add pg_stat_monitor to shared_preload_libraries in postgresql.conf, following the upstream documentation. Start or restart PostgreSQL.
+4. Run CREATE EXTENSION pg_stat_monitor; in the database where the extension is needed.
+
+Verify downloaded files using SHA256SUMS.txt from the Release. Review the Release for SPDX SBOMs, vulnerability reports and signed attestations. Test in a non-production environment before deployment.
+
+## License and support
+
+Consult [upstream pg_stat_monitor](https://github.com/percona/pg_stat_monitor) for SQL usage, settings, permissions, and limitations. pgextwin is an independent community package and is not an official upstream distribution. Refer to the included license.
