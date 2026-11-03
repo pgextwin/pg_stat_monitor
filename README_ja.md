@@ -1,11 +1,22 @@
-# pg_stat_monitor — Windows x64 バイナリ（pgextwin）
+# pg_stat_monitor — Windows x64 バイナリ
 
 [English](README.md) | 日本語
 
-上流[Percona pg_stat_monitor](https://github.com/percona/pg_stat_monitor) **2.4.0**（固定コミット `2de2db763db9f590cd28159741c36b41f66eb985`）の非公式Windows x64向けコミュニティ製バイナリです。
+[pg_stat_monitor](https://github.com/percona/pg_stat_monitor)の**非公式Windows x64バイナリ**です。時間帯ごとのクエリ統計を収集する拡張機能です。
 
-**現在の公開Release：** [v2.4.0-windows.1](https://github.com/pgextwin/pg_stat_monitor/releases/tag/v2.4.0-windows.1)。PostgreSQL **14〜18**向けのZIPを配布しています。対応するPGメジャー専用ZIPを選び、[pgextwin Pages](https://pgextwin.github.io/website/ja/)でSHA256・SPDX SBOM・Grype・証明情報を確認してください。上流公式のWindows配布ではありません。
+## ダウンロードと対応環境
 
-利用には`shared_preload_libraries = 'pg_stat_monitor'`の設定とPostgreSQLの再起動、および`CREATE EXTENSION pg_stat_monitor`が必要です。Windows CIでは事前ロードして起動し、実際のクエリが時間区間別統計に記録されること、拡張バージョンとクエリカウンター、終了時の後処理を検証しています。**サーバーログ検証とアップグレード経路は現行CIでは未検証**です。[Windows導入・検証ガイド](docs/windows_ja.md)も参照してください。
+[最新の公開Release](https://github.com/pgextwin/pg_stat_monitor/releases/latest)から入手できます。[過去のReleases](https://github.com/pgextwin/pg_stat_monitor/releases)も確認できます。PostgreSQL **14〜18**向けの公開状況は[pgextwinカタログ](https://pgextwin.github.io/website/ja/)を参照してください。利用中のPostgreSQLメジャーバージョンに一致するZIPを選んでください。PostgreSQL 14のコミュニティサポートは2026年11月12日に終了します。
 
-PostgreSQL 14の新規ビルドは公式EOLの**2026-11-12**まで対象とし、公開済み成果物は履歴として残します。上流更新だけを理由に無検証でReleaseを公開しません。
+## インストール
+
+1. PostgreSQL環境をバックアップし、[上流の導入要件](https://github.com/percona/pg_stat_monitor)を確認します。
+2. 既存ファイルの置き換え前にPostgreSQLを停止します。該当するZIPのlib/とshare/extension/以下のファイルを、PostgreSQLの同名ディレクトリへコピーします。
+3. 上流ドキュメントに従い、postgresql.confのshared_preload_librariesへpg_stat_monitorを追加してPostgreSQLを起動します。
+4. 利用するデータベースでCREATE EXTENSION pg_stat_monitor;を実行します。
+
+ReleaseのSHA256SUMS.txtでダウンロードしたファイルを照合してください。SPDX形式のSBOM、脆弱性レポート、署名付き証明の有無はReleaseで確認できます。本番導入前に検証環境で動作を確認してください。
+
+## ライセンスと問い合わせ先
+
+SQLの使い方、設定、権限、制限事項は[上流のpg_stat_monitor](https://github.com/percona/pg_stat_monitor)を参照してください。本バイナリは上流公式による配布ではありません。再配布条件は同梱のライセンスをご確認ください。
