@@ -12,10 +12,10 @@
 
 1. PostgreSQL環境をバックアップし、[上流の導入要件](https://github.com/percona/pg_stat_monitor)を確認します。
 2. 既存ファイルの置き換え前にPostgreSQLを停止します。該当するZIPのlib/とshare/extension/以下のファイルを、PostgreSQLの同名ディレクトリへコピーします。
-3. 上流ドキュメントに従い、postgresql.confのshared_preload_librariesへpg_stat_monitorを追加してPostgreSQLを起動します。
-4. 利用するデータベースでCREATE EXTENSION pg_stat_monitor;を実行します。
+3. 上流ドキュメントに従い、`postgresql.conf`の`shared_preload_libraries`にpg_stat_monitorを追加してPostgreSQLを起動します。
+4. 利用するデータベースで`CREATE EXTENSION pg_stat_monitor;`を実行します。
 
-ReleaseのSHA256SUMS.txtでダウンロードしたファイルを照合してください。SPDX形式のSBOM、脆弱性レポート、署名付き証明の有無はReleaseで確認できます。本番導入前に検証環境で動作を確認してください。
+ダウンロードしたファイルを、Releaseに掲載された`SHA256SUMS.txt`と照合してください。SPDX形式のSBOM、脆弱性レポート、署名付き証明の有無はReleaseで確認できます。本番環境に導入する前に、検証環境で動作を確認してください。
 
 ## ライセンスと問い合わせ先
 
